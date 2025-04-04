@@ -234,7 +234,7 @@ def aggregate_results(results_queue, base_path, filename, args):
     print(f"{args.model_type} - Total R2: {metrics_total['r2']:.4f} | Total RMSE: {metrics_total['rmse']:.4f} | Total NMAE: {metrics_total['nmae']:.4f} | Total Abs Bias: {metrics_total['abs_bias']:.4f} | Total NSE: {metrics_total['nse']:.4f}")
 
 def main(args):
-    data = pd.read_csv('../data/processed/fdk_v342_ml.csv', index_col='sitename', parse_dates=['TIMESTAMP'])
+    data = pd.read_csv('../data/fdk_v342_ml.csv', index_col='sitename', parse_dates=['TIMESTAMP'])
     numerical_features = ['TA_F_MDS', 'TA_DAY_F_MDS', 'SW_IN_F_MDS', 'LW_IN_F_MDS', 'VPD_DAY_F_MDS', 'PA_F', 'P_F', 'WS_F', 'FPAR']
     if args.model_type == 'LSTM' and args.extra_features:
         categorical_features = []

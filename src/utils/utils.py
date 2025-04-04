@@ -14,11 +14,3 @@ def set_seed(seed: int = 42):
     torch.backends.cudnn.benchmark = False
 
 
-def generate_filename(model, desc, hparams):
-        hparams_formatted = {k: f"{v}".replace('-', 'm').replace('.', 'p') for k, v in hparams.items()}
-        current_datetime = datetime.datetime.now().strftime("%d%m%Y_%H%M")
-        filename = (f"{model}_{desc}_"
-            f"{'_'.join([f'{k}{v}' for k, v in hparams_formatted.items()])}"
-            f"_{current_datetime}")
-        return f"{filename}"
-

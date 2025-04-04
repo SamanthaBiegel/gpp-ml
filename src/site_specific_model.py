@@ -307,7 +307,7 @@ if __name__ == '__main__':
 
     set_seed(args.seed)
 
-    data = pd.read_csv('../data/processed/fdk_v342_ml.csv', parse_dates=['TIMESTAMP'])
+    data = pd.read_csv('../data/fdk_v342_ml.csv', parse_dates=['TIMESTAMP']).set_index('sitename')
     numerical_features = ['TA_F_MDS', 'TA_DAY_F_MDS', 'SW_IN_F_MDS', 'LW_IN_F_MDS', 'VPD_DAY_F_MDS', 'PA_F', 'P_F', 'WS_F', 'FPAR']
     categorical_features = []
     if len(categorical_features) > 0:
