@@ -183,5 +183,3 @@ models/runs/
 models/weights/
 models/preds/
 events.out.tfevents.*
-
-fdk_v342_ml.csv
