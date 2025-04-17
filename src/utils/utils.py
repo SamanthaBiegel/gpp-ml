@@ -2,7 +2,6 @@ import numpy as np
 import torch
 import random
 import os
-import datetime
 
 def set_seed(seed: int = 42):
     random.seed(seed)
