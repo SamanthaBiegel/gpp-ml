@@ -107,7 +107,7 @@ class Model(nn.Module):
 
             layers = [nn.Sequential(
                 nn.Linear(initial_dim, current_dim),
-                nn.ReLU()
+                nn.GELU()
             )]
             
             # Create additional layers that half the dimension each time until it reaches 16
@@ -115,7 +115,7 @@ class Model(nn.Module):
                 next_dim = max(current_dim // 2, 16)
                 layer = nn.Sequential(
                     nn.Linear(current_dim, next_dim),
-                    nn.ReLU()
+                    nn.GELU()
                 )
                 layers.append(layer)
                 current_dim = next_dim

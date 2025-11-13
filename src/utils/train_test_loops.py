@@ -24,10 +24,10 @@ def train_loop(dataloader, model, optimizer, DEVICE, steps, writer=None, has_cat
     for batch in dataloader:
         if has_categorical_features:
             x, y, c = batch
-            x, y, c = x.to(DEVICE), y.to(DEVICE), c.to(DEVICE)
+            x, y, c = x.to(DEVICE, non_blocking=True), y.to(DEVICE, non_blocking=True), c.to(DEVICE, non_blocking=True)
         else:
             x, y = batch
-            x, y = x.to(DEVICE), y.to(DEVICE)
+            x, y = x.to(DEVICE, non_blocking=True), y.to(DEVICE, non_blocking=True)
 
         optimizer.zero_grad()
         
@@ -36,7 +36,7 @@ def train_loop(dataloader, model, optimizer, DEVICE, steps, writer=None, has_cat
         else:
             y_pred = model(x)
         
-        loss = criterion(y_pred.flatten(), y.flatten())
+        loss = criterion(y_pred.squeeze(-1), y)
 
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -66,29 +66,30 @@ def test_loop(dataloader, model, DEVICE, has_categorical_features=False):
     """
 
     model.eval()
-    test_loss = 0.0
-    n_batches = len(dataloader)
+    total_loss = 0.0
+    total_count = 0
     criterion = nn.MSELoss()
     all_y_pred = []
-    count_preds = 0
 
     with torch.no_grad():
         for batch in dataloader:
             if has_categorical_features:
                 x, y, c = batch
-                x, y, c = x.to(DEVICE), y.to(DEVICE), c.to(DEVICE)
+                x, y, c = x.to(DEVICE, non_blocking=True), y.to(DEVICE, non_blocking=True), c.to(DEVICE, non_blocking=True)
             else:
                 x, y = batch
-                x, y = x.to(DEVICE), y.to(DEVICE)
+                x, y = x.to(DEVICE, non_blocking=True), y.to(DEVICE, non_blocking=True)
 
+            T = x.shape[1]
+            
             if has_categorical_features:
-                y_pred = model(x, c)
+                preds = model(x, c)
             else:
-                y_pred = model(x)
-
-            test_loss += criterion(y_pred.squeeze().flatten(), y.squeeze().flatten())
-            count_preds += y_pred.squeeze().flatten().shape[0]
-            all_y_pred.append(y_pred.squeeze().detach().cpu().numpy())       
-
-    return test_loss / n_batches, all_y_pred
-
+                preds = model(x)
+            loss = criterion(preds.squeeze(-1), y)
+            total_loss += loss.item() * T
+            total_count += T
+            
+            all_y_pred.append(preds.squeeze().detach().cpu().numpy())
+     
+    return total_loss / total_count, all_y_pred

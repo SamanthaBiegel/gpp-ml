@@ -32,7 +32,7 @@ def add_stratification_target(df):
 
 
 class gpp_dataset(Dataset):
-    def __init__(self, x, train_stats, num_features, cat_features=None, test=False, chunk_size=128, overlap=32, max_offset=96):
+    def __init__(self, x, train_stats, num_features, cat_features=None, test=False, permute=False, chunk_size=128, overlap=32, max_offset=96):
         """
         A PyTorch Dataset for GPP prediction.
 
@@ -47,6 +47,7 @@ class gpp_dataset(Dataset):
             max_offset (int): Maximum random offset for varying the starting point.
         """
         self.test = test
+        self.permute = permute
         self.data = x
         self.chunk_size = chunk_size
         self.overlap = overlap
@@ -71,6 +72,18 @@ class gpp_dataset(Dataset):
 
         # Get max number of samples in one site
         self.max_samples = x.index.value_counts().max()
+
+        if self.permute:
+            for site in x.index.unique():
+                site_mask = x.index == site
+                perm = torch.randperm(site_mask.sum())
+                new_x = self.x[site_mask][perm]
+                new_y = self.y[site_mask][perm]
+                self.x[site_mask] = new_x
+                self.y[site_mask] = new_y
+                if self.cat:
+                    new_c = self.c[site_mask][perm]
+                    self.c[site_mask] = new_c
         
         if not self.test:
             self.sites = x.index.unique()
@@ -109,6 +122,7 @@ class gpp_dataset(Dataset):
             if self.cat:
                 self.c = torch.stack(c_chunks_list)
             self.len = len(self.x)
+
         else:
             # if validation or test dataset, take entire site time series as one chunk
             self.sitename = x.index

@@ -5,7 +5,7 @@ from utils.evaluate_model import evaluate_model
 import copy
 
 
-def train_model(train_dl, val_dl, model, optimizer, scheduler, n_epochs, DEVICE, patience, writer=None, early_stopping = True, cat = False):
+def train_model(train_dl, val_dl, model, optimizer, scheduler, n_epochs, DEVICE, patience, writer=None, early_stopping = True, cat = False, seq2one = False):
     """
     Train the model using the provided training and validation data loaders.
 
@@ -32,10 +32,10 @@ def train_model(train_dl, val_dl, model, optimizer, scheduler, n_epochs, DEVICE,
         
         # Perform one round of training, doing backpropagation for each training batch
         global_steps = len(train_dl)*epoch
-        train_loss, model = train_loop(train_dl, model, optimizer, DEVICE, global_steps, writer, cat)
+        train_loss, model = train_loop(train_dl, model, optimizer, DEVICE, global_steps, writer, cat, seq2one)
 
         # Evaluate model on val set
-        val_loss, y_pred = test_loop(val_dl, model, DEVICE, cat)
+        val_loss, y_pred = test_loop(val_dl, model, DEVICE, cat, seq2one, chunk_size=128)
         val_metrics, _ = evaluate_model(val_dl, y_pred)
 
         scheduler.step(val_loss)

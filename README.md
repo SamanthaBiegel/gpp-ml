@@ -15,11 +15,11 @@ pip install -r requirements.txt
 
 The following commands run experiments for the deep learning models:
 ```
-python -u global_model.py --model_type LSTM --early_stopping --layernorm
-python -u global_model.py --model_type MLP --early_stopping
-python -u site_specific_model --model_type LSTM --early_stopping --layernorm
-python -u site_specific_model --model_type MLP --early_stopping
-python -u global_model.py --model_type LSTM --early_stopping --layernorm --extra_features
-python -u global_model.py --model_type MLP --early_stopping --extra_features
+python -u global_model.py --model_type LSTM --early_stopping --layernorm --modis
+python -u global_model.py --model_type MLP --early_stopping --modis
+python -u site_specific_model --model_type LSTM --early_stopping --layernorm --modis
+python -u site_specific_model --model_type MLP --early_stopping --modis
+python -u global_model.py --model_type LSTM --early_stopping --layernorm --extra_features --modis
+python -u global_model.py --model_type MLP --early_stopping --extra_features --modis
 ```
 The P-model experiment can be run using the script R/pmodel_global.R.
